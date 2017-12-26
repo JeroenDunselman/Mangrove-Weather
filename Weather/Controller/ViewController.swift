@@ -94,18 +94,18 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         self.loadSettings()
-        self.getData()
+        vcSettings = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? SettingsViewController
         
         self.labelCity.text = settings.location
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-
-        let day = Date().dayOfWeek()!
-        let substring3 = day.subString(startIndex: 0, endIndex: 2)
-        self.labelToday.text = "\(substring3) \(dateFormatter.string(from: Date()))"  //Date().description
         
-        vcSettings = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? SettingsViewController
+        let day = Date().dayOfWeek()!
+        let dayDescription = day.subString(startIndex: 0, endIndex: 2)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd MMM"
+        let dateDescription = dateFormatter.string(from: Date())
+        self.labelToday.text = "\(dayDescription) \(dateDescription)"
+        
+        self.getData()
     }
     
     override func didReceiveMemoryWarning() {
