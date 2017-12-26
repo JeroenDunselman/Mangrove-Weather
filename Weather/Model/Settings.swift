@@ -12,5 +12,4 @@ struct Settings {
   var location = "Rotterdam"
   var temperatureUnitCelsius = true
   var numberOfDays = 0
-  
 }
