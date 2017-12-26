@@ -47,14 +47,10 @@ class WeatherService {
     return _tempTodayMin ?? "min n.a."
   }
   
-
-  
   func getCurrentWeatherData() {
     let path = "\(urlCurrent)?q=\(location)&appid=\(openWeatherMapAPIKey)&units=\(currentUnits)"
-//    "http://api.openweathermap.org/data/2.5/forecast/daily?q=Utrecht&appid=\(openWeatherMapAPIKey)"
-        print(path)
-    
-    let url = NSURL(string: path)
+    let urlString = path.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+    let url = NSURL(string: urlString!)
     
     let task = URLSession.shared.dataTask(with: url! as URL) { (data, response, error) in
       DispatchQueue.main.async {
@@ -95,10 +91,9 @@ class WeatherService {
   }
   
   func getForecastWeatherData() {
-    let path = "http://api.openweathermap.org/data/2.5/forecast/daily?q=\(location)&appid=\(openWeatherMapAPIKey)&units=\(currentUnits)&cnt=7"
-        print(path)
-    //  &units=metric&cnt=7&
-    let url = NSURL(string: path)
+    let path = "\(urlForecast)?q=\(location)&appid=\(openWeatherMapAPIKey)&units=\(currentUnits)"
+    let urlString = path.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+    let url = NSURL(string: urlString!)
     
     let task = URLSession.shared.dataTask(with: url! as URL) { (data, response, error) in
       DispatchQueue.main.async {
