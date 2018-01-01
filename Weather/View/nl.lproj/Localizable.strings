@@ -1,0 +1,15 @@
+/* 
+  Localizable.strings
+  Weather
+
+  Created by Jeroen Dunselman on 01/01/2018.
+  Copyright © 2018 Jeroen Dunselman. All rights reserved.
+*/
+"Welcome" = "Welkom";
+"Today" = "Vandaag";
+"Tomorrow" = "Morgen";
+"Location" = "Lokatie";
+"Unit" = "Eenheid";
+"Number of days" = "Aantal dagen";
+"Information" = "Informatie";
+"Settings" = "Instellingen";

@@ -1,0 +1,51 @@
+
+/* Class = "UILabel"; text = "Today"; ObjectID = "60W-a2-1JE"; */
+"60W-a2-1JE.text" = "Today";
+
+/* Class = "UILabel"; text = "v1.0.0"; ObjectID = "8uh-bq-dVs"; */
+"8uh-bq-dVs.text" = "v1.0.0";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "B5d-Zi-Kl7"; */
+"B5d-Zi-Kl7.text" = "Label";
+
+/* Class = "UIViewController"; title = "Home"; ObjectID = "BYZ-38-t0r"; */
+"BYZ-38-t0r.title" = "Home";
+
+/* Class = "UILabel"; text = "12"; ObjectID = "DNZ-m3-sEV"; */
+"DNZ-m3-sEV.text" = "12";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Fee-dg-I1k"; */
+"Fee-dg-I1k.text" = "Label";
+
+/* Class = "UILabel"; text = "City"; ObjectID = "G7L-r6-deW"; */
+"G7L-r6-deW.text" = "City";
+
+/* Class = "UILabel"; text = "7"; ObjectID = "HGl-JX-zLr"; */
+"HGl-JX-zLr.text" = "7";
+
+/* Class = "UILabel"; text = "7"; ObjectID = "MDe-4j-uvy"; */
+"MDe-4j-uvy.text" = "7";
+
+/* Class = "UILabel"; text = "12"; ObjectID = "V7S-Mc-acH"; */
+"V7S-Mc-acH.text" = "12";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "WDv-X5-ScH"; */
+"WDv-X5-ScH.text" = "Label";
+
+/* Class = "UITextView"; text = "This exercise was developed and designed by Mangrove from Rotterdam for the purpose of testing iOS development skills.\n\nThis app cannot be published or released in any way without the knowledge and approval of Mangrove.\n\nIf you have any questions please contact us directly and during this exercise don’t forget to have fun while coding!"; ObjectID = "b2a-PU-UAC"; */
+"b2a-PU-UAC.text" = "This exercise was developed and designed by Mangrove from Rotterdam for the purpose of testing iOS development skills.\n\nThis app cannot be published or released in any way without the knowledge and approval of Mangrove.\n\nIf you have any questions please contact us directly and during this exercise don’t forget to have fun while coding!";
+
+/* Class = "UILabel"; text = "Weather description"; ObjectID = "bqe-A2-AmI"; */
+"bqe-A2-AmI.text" = "Weather description";
+
+/* Class = "UILabel"; text = "Today"; ObjectID = "fLf-XD-V0k"; */
+"fLf-XD-V0k.text" = "Today";
+
+/* Class = "UILabel"; text = "0.0"; ObjectID = "p9x-Uz-uTp"; */
+"p9x-Uz-uTp.text" = "0.0";
+
+/* Class = "UILabel"; text = "v1.0.0"; ObjectID = "xpC-gR-Evg"; */
+"xpC-gR-Evg.text" = "v1.0.0";
+
+/* Class = "UIViewController"; title = "Information"; ObjectID = "yFt-W6-4pb"; */
+"yFt-W6-4pb.title" = "Information";

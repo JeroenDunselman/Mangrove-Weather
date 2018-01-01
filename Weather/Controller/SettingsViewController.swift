@@ -78,7 +78,7 @@ extension SettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
   func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
   {
     if currentRow == 1 {
-      self.settings?.temperatureUnitCelsius = row == 0 ? true : false
+      self.settings?.temperatureUnitFahrenheit = row == 0 ? false : true
     }
     else if currentRow == 2 {
       self.settings?.numberOfDays = row + 1
@@ -102,7 +102,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
       
     else if currentRow == 1{
       pickerData = ["Celsius", "Fahrenheit"]
-      pickerRow = (self.settings?.temperatureUnitCelsius)! ? 0 : 1
+      pickerRow = (self.settings?.temperatureUnitFahrenheit)! ? 1 : 0
     }
       
     else if currentRow == 2 {
@@ -135,17 +135,17 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     let row = indexPath.row
     
     if row == 0 {
-      settingsCell.labelKey?.text = "Location"
+      settingsCell.labelKey?.text = NSLocalizedString("Location", comment: "")
       settingsCell.labelValue?.text = settings?.location
     }
     
     if row == 1 {
-      settingsCell.labelKey?.text = "Unit"
-      settingsCell.labelValue?.text = (settings?.temperatureUnitCelsius)! ? "Celsius" : "Fahrenheit"
+      settingsCell.labelKey?.text = NSLocalizedString("Unit", comment: "")
+      settingsCell.labelValue?.text = (settings?.temperatureUnitFahrenheit)! ? "Fahrenheit" : "Celsius"
     }
     
     if row == 2 {
-      settingsCell.labelKey?.text = "Number of days"
+      settingsCell.labelKey?.text = NSLocalizedString("Number of days", comment: "")
       settingsCell.labelValue?.text = settings?.numberOfDays.description
     }
     

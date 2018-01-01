@@ -1,4 +1,4 @@
-//
+
 //  ViewController.swift
 //  Weather
 //
@@ -7,221 +7,254 @@
 //
 
 import UIKit
+
 protocol WeatherView: NSObjectProtocol {
-    func currentDataAvailable()
-    func forecastDataAvailable()
+  func currentDataAvailable()
+  func forecastDataAvailable()
 }
 
 extension ViewController: WeatherView {
+  
+  func currentDataAvailable() {
     
-    func currentDataAvailable() {
-        
-        self.labelTemperature.text = self.weather.tempCurrent
-        self.labelMax.text = self.weather.tempTodayMax
-        self.labelMin.text = self.weather.tempTodayMin
-        
-        if let imageName = self.weatherTypeIcons.object(forKey: self.weather.weatherTypeCurrent) as? String,
-            let image = UIImage(named: imageName) as UIImage! {
-            self.imageIconCurrent.image = image
-        }
-        
-        self.labelWeatherDescription.text = self.weather.weatherTypeCurrent
-    }
+    self.labelTemperature.text = self.weather.tempCurrent
+    self.labelMax.text = self.weather.tempTodayMax
+    self.labelMin.text = self.weather.tempTodayMin
     
-    func forecastDataAvailable() {
-        //    activityIndicator?.stopAnimating()
-        
-        self.tableView?.isHidden = false
-        tableView.dataSource = self
-        
-        self.tableView?.reloadData()
-    }
+    let imageName = iconNameFor(id: self.weather.weatherTypeCurrentId)
+    let image = UIImage(named: imageName)
+    self.imageIconCurrent.image = image
+    self.labelWeatherDescription.text = self.weather.weatherTypeCurrent
+  }
+  
+  func forecastDataAvailable() {
     
-}
-
-extension String {
-    func subString(startIndex: Int, endIndex: Int) -> String {
-        let end = (endIndex - self.count) + 1
-        let indexStartOfText = self.index(self.startIndex, offsetBy: startIndex)
-        let indexEndOfText = self.index(self.endIndex, offsetBy: end)
-        let substring = self[indexStartOfText..<indexEndOfText]
-        return String(substring)
-    }
+    self.tableView?.isHidden = false
+    tableView.dataSource = self
+    
+    self.tableView?.reloadData()
+  }
+  
 }
 
 class ViewController: UIViewController {
+  
+  var navController: UINavigationController?
+  
+  let defaults = UserDefaults.standard
+  var settings = Settings()
+  var vcSettings: SettingsViewController?
+  @IBOutlet weak var buttonSettings: UIButton!
+  
+  var weather = WeatherService()
+  let textCellIdentifier = "ForecastCell"
+  @IBOutlet var tableView: UITableView!
+  
+  @IBOutlet weak var labelCity: UILabel!
+  @IBOutlet weak var labelWeatherDescription: UILabel!
+  @IBOutlet weak var imageIconCurrent: UIImageView!
+  @IBOutlet weak var labelTemperature: UILabel!
+  
+  @IBOutlet weak var labelToday: UILabel!
+  @IBOutlet weak var labelDateCurrent: UILabel!
+  
+  @IBOutlet weak var labelMin: UILabel!
+  @IBOutlet weak var labelMax: UILabel!
+  
+
+  
+  func getData() {
+    weather.view = self
+    weather.location = settings.location
+    weather.currentUnits = settings.temperatureUnitFahrenheit ? weather.units.Fahrenheit : weather.units.Celsius
+    weather.getCurrentWeatherData()
+    weather.getForecastWeatherData()
+  }
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
     
-    var settings = Settings()
-    var vcSettings: SettingsViewController?
-    let textCellIdentifier = "ForecastCell"
-    let defaults = UserDefaults.standard
+    self.loadSettings()
+    vcSettings = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? SettingsViewController
+
+    self.initializeView()
+    self.getData()
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+  }
+ 
+  
+  func initializeView() {
     
-    @IBOutlet var tableView: UITableView!
-    @IBOutlet weak var labelCity: UILabel!
-    @IBOutlet weak var labelWeatherDescription: UILabel!
-    @IBOutlet weak var imageIconCurrent: UIImageView!
-    @IBOutlet weak var labelTemperature: UILabel!
-    @IBOutlet weak var labelDate: UILabel!
-    @IBOutlet weak var labelMin: UILabel!
-    @IBOutlet weak var labelMax: UILabel!
+    self.labelCity.text = settings.location
     
+    let day = Date().dayOfWeek()!
+    let dayDescription = day.subString(startIndex: 0, endIndex: 2)
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "dd MMM"
+    let dateDescription = dateFormatter.string(from: Date())
+    self.labelDateCurrent.text = "\(dayDescription) \(dateDescription)"
+    self.labelToday.text = NSLocalizedString("Today", comment: "")
     
-    @IBOutlet weak var labelToday: UILabel!
-    @IBOutlet weak var buttonSettings: UIButton!
+    self.labelWeatherDescription.text = ""
+    self.labelTemperature.text = ""
+    self.labelMax.text = ""
+    self.labelMin.text = ""
     
-    var weather = WeatherService()
-    func getData() {
-        weather.view = self
-        weather.location = settings.location
-        weather.currentUnits = settings.temperatureUnitCelsius ? weather.units.Celsius : weather.units.Fahrenheit
-        weather.getCurrentWeatherData()
-        weather.getForecastWeatherData()
-    }
+    let image = UIImage(named: "unavailable")
+    self.imageIconCurrent.image = image
     
-    let weatherTypeIcons:NSDictionary = [
-        "clear sky" : "01d.png",
-        "few clouds" : "02d.png",
-        "scattered clouds" : "03d.png",
-        "broken clouds" : "04d.png",
-        "shower rain" : "09d.png",
-        "rain" : "10d.png",
-        "light rain" : "10d.png",
-        "thunderstorm" : "11d.png",
-        "snow" : "13d.png",
-        "mist" : "50d.png"]
+    self.weather.forecast = []
+    self.tableView.reloadData()
+  }
+  
+  @IBAction func buttonInfo(_ sender: Any) {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.loadSettings()
-        vcSettings = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? SettingsViewController
-        
-        self.labelCity.text = settings.location
-        
-        let day = Date().dayOfWeek()!
-        let dayDescription = day.subString(startIndex: 0, endIndex: 2)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd MMM"
-        let dateDescription = dateFormatter.string(from: Date())
-        self.labelToday.text = "\(dayDescription) \(dateDescription)"
-        
-        self.getData()
-    }
+    let vcInfo = self.storyboard?.instantiateViewController(withIdentifier: "Info")
+    vcInfo?.navigationItem.title = NSLocalizedString("Information", comment: "")
+    vcInfo?.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(dismissInfo))
+
+    navController = UINavigationController(rootViewController: vcInfo!)
+    presentDetail(navController!)
+  }
+  
+  @IBAction func buttonSettings(_ sender: UIButton) {
+    vcSettings?.settings = self.settings
+    vcSettings?.navigationItem.title = NSLocalizedString("Settings", comment: "")
+    vcSettings?.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(dismissSettings))
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    @IBAction func buttonInfo(_ sender: Any) {
-    }
+    navController = UINavigationController(rootViewController: vcSettings!)
+    presentDetail(navController!)
+  }
+  
+  @objc func dismissSettings(){
     
-    @IBAction func buttonSettings(_ sender: UIButton) {
-        vcSettings?.settings = self.settings
-        vcSettings?.navigationItem.title = "Settings"
-        vcSettings?.navigationItem.leftBarButtonItem =
-            UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(goBack))
-        
-        let navController = UINavigationController(rootViewController: vcSettings!)
-        
-        let transition = CATransition()
-        transition.duration = 0.2
-        transition.type = kCATransitionPush
-        transition.subtype = kCATransitionFromRight
-        view.window!.layer.add(transition, forKey: kCATransition)
-        
-        present(navController, animated: false, completion: nil)
-    }
+    //  update defaults
+    self.settings = (vcSettings?.settings)!
+    writeSettings()
     
-    @objc func goBack(){
-        
-        //  update defaults
-        self.settings = (vcSettings?.settings)!
-        writeSettings()
-        
-        //  update view
-        self.getData()
-        
-        dismiss(animated: true, completion: nil)
-    }
+    //  update view
+    self.initializeView()
+    self.getData()
     
+    dismiss()
+  }
+  
+  func presentDetail(_ viewControllerToPresent: UIViewController) {
+    let transition = CATransition()
+    transition.duration = 0.25
+    transition.type = kCATransitionPush
+    transition.subtype = kCATransitionFromRight
+    self.view.window!.layer.add(transition, forKey: kCATransition)
+    
+    present(viewControllerToPresent, animated: false)
+  }
+  
+  @objc func dismissInfo() {
+    dismiss()
+  }
+  
+  func dismiss() {
+    let transition = CATransition()
+    transition.duration = 0.25
+    transition.type = kCATransitionPush
+    transition.subtype = kCATransitionFromLeft
+    self.navController?.view.window!.layer.add(transition, forKey: kCATransition)
+    dismiss(animated: false)
+  }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
+  
+  func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    return 1
+  }
+  
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return min(self.settings.numberOfDays, self.weather.forecast.count)
+  }
+  
+  internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+    let cell = tableView.dequeueReusableCell(withIdentifier: textCellIdentifier, for: indexPath as IndexPath) as! ForecastTableViewCell
+    let row = indexPath.row
+    
+    var dayDescription = ""
+    if row == 0 {
+      dayDescription = NSLocalizedString("Tomorrow", comment: "")
+    } else {
+      let nextDate = Calendar.current.date(byAdding: .day, value: row + 1, to: Date())
+      dayDescription = (nextDate?.dayOfWeek()!)!
+    }
+    cell.labelDay?.text = dayDescription
+    
+    cell.labelMin?.text = self.weather.forecast[row].min
+    cell.labelMax?.text = self.weather.forecast[row].max
+    
+    let weatherType:Int = self.weather.forecast[row].typeId
+    let imageName = iconNameFor(id: weatherType)
+    if let image = UIImage(named: imageName) as UIImage! {
+      cell.imageIcon.image = image
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.settings.numberOfDays // 7
-    }
-    
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: textCellIdentifier, for: indexPath as IndexPath) as! ForecastTableViewCell
-        let row = indexPath.row
-        
-        var dayDescription = ""
-        if row == 0 {
-            dayDescription = "Tomorrow"
-        } else {
-            let nextDate = Calendar.current.date(byAdding: .day, value: row, to: Date())
-            dayDescription = (nextDate?.dayOfWeek()!)!
-        }
-        cell.labelDay?.text = dayDescription
-        cell.labelMin?.text = self.weather.forecast[row].min
-        cell.labelMax?.text = self.weather.forecast[row].max
-        
-        let type:String = (self.weather.forecast[row].type).lowercased()
-        let imageName = self.weatherTypeIcons.object(forKey: type) as! String
-        if let image = UIImage(named: imageName) as UIImage! {
-            cell.imageIcon.image = image
-        }
-        
-        return cell
-    }
-    
+    return cell
+  }
+  
+  func iconNameFor(id: Int) -> String {
+//    http://openweathermap.org/weather-conditions
+    if id >= 200 || id < 300 { return "storm.png"}
+    if id >= 300 || id < 800 { return "rain.png"}
+    if id == 800             { return "sun.png"}
+    if id >= 801 || id < 900 { return "clouds.png"}
+    return ""
+  }
+  
 }
 
 extension Date {
-    
-    func dayOfWeek() -> String? {
-        //    if self == Date() { return "Today" }
-        //    if self == Calendar.current.date(byAdding: .day, value: 1, to: self) { return "Tomorrow" }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE"
-        return dateFormatter.string(from: self).capitalized
-        // or use capitalized(with: locale)
-    }
+  
+  func dayOfWeek() -> String? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "EEEE"
+    return dateFormatter.string(from: self).capitalized
+  }
 }
 
 extension ViewController {
-    
-    func loadSettings() {
-        
-        if defaults.string(forKey: "Location") != ""  {
-            settings.location = defaults.value(forKey: "Location")! as! String
-        }
-        
-        if defaults.bool(forKey:"Temperature units Celsius") {
-            settings.temperatureUnitCelsius = defaults.bool(forKey: "Temperature units Celsius")
-        } else {
-            settings.temperatureUnitCelsius = false
-        }
-        
-        if defaults.integer(forKey:"Number of days Forecast") != 0 {
-            settings.numberOfDays = defaults.integer(forKey: "Number of days Forecast")
-        }
+  
+  func loadSettings() {
+
+    if let location = defaults.string(forKey: "Location") as String! {
+      settings.location = location
     }
     
-    func writeSettings() {
-        
-        defaults.set(settings.location, forKey: "Location")
-        defaults.set(settings.temperatureUnitCelsius, forKey: "Temperature units Celsius")
-        defaults.set(settings.numberOfDays, forKey: "Number of days Forecast")
-        defaults.synchronize()
-        
-        self.labelCity.text = settings.location
+    if defaults.integer(forKey:"Number of days Forecast") != 0 {
+      settings.numberOfDays = defaults.integer(forKey:"Number of days Forecast")
     }
+    
+    settings.temperatureUnitFahrenheit = defaults.bool(forKey:"Temperature units Fahrenheit")
+  }
+  
+  func writeSettings() {
+    
+    defaults.set(settings.location, forKey: "Location")
+    defaults.set(settings.temperatureUnitFahrenheit, forKey: "Temperature units Fahrenheit")
+    defaults.set(settings.numberOfDays, forKey: "Number of days Forecast")
+    defaults.synchronize()
+    
+    self.labelCity.text = settings.location
+  }
+}
+
+extension String {
+  func subString(startIndex: Int, endIndex: Int) -> String {
+    let end = (endIndex - self.count) + 1
+    let indexStartOfText = self.index(self.startIndex, offsetBy: startIndex)
+    let indexEndOfText = self.index(self.endIndex, offsetBy: end)
+    let substring = self[indexStartOfText..<indexEndOfText]
+    return String(substring)
+  }
 }
 

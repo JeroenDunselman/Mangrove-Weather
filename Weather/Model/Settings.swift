@@ -10,6 +10,6 @@ import Foundation
 
 struct Settings {
   var location = "Rotterdam"
-  var temperatureUnitCelsius = true
-  var numberOfDays = 0
+  var temperatureUnitFahrenheit = false
+  var numberOfDays = 7
 }
